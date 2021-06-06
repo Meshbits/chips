@@ -27,8 +27,7 @@ jobs:
           sudo apt-get -y update
           sudo ACCEPT_EULA=Y apt-get upgrade -y
           sudo apt-get install -q -y \
-            curl python3 \
-            libcurl4-openssl-dev libssl-dev
+            curl python3 libcurl4-openssl-dev libssl-dev \
             software-properties-common autoconf git build-essential libtool \
             libprotobuf-c-dev libgmp-dev libsqlite3-dev python zip \
             jq libevent-dev pkg-config libcurl4-gnutls-dev cmake
