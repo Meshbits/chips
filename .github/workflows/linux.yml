@@ -30,27 +30,20 @@ jobs:
             curl python3 libssl-dev software-properties-common autoconf \
             git build-essential libtool \
             libprotobuf-c-dev libgmp-dev libsqlite3-dev python zip \
-            jq libevent-dev pkg-config libcurl4-gnutls-dev cmake
+            jq libevent-dev pkg-config libcurl4-gnutls-dev cmake \
+            libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools \
+            libqrencode-dev libminiupnpc-dev libzmq3-dev
 
       - name: Build (Linux)
         run: |
             export CHIPS_ROOT=$(pwd)
-            export BDB_PREFIX="${CHIPS_ROOT}/db4"
-            wget 'http://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz'
-            mkdir -p $BDB_PREFIX
-            echo '12edc0df75bf9abd7f82f821795bcee50f42cb2e5f76a6a281b85732798364ef db-4.8.30.NC.tar.gz' | sha256sum -c
-            tar -xzvf db-4.8.30.NC.tar.gz
-            cd db-4.8.30.NC/build_unix/
-            ../dist/configure -enable-cxx -disable-shared -with-pic -prefix=$BDB_PREFIX
-            make -j$(nproc)
-            make install
-
             cd $CHIPS_ROOT
-            git clone https://github.com/jl777/chips3.git -b dev
-            cd chips3/
+            git clone https://github.com/chips-blockchain/chips -b master
+            cd chips/depends
+            make
+            cd ..
             ./autogen.sh
-            ./configure LDFLAGS="-L${BDB_PREFIX}/lib/" CPPFLAGS="-I${BDB_PREFIX}/include/" \
-            -without-gui -without-miniupnpc --disable-tests --disable-bench --with-gui=no
+            ./configure --prefix=$(pwd)/depends/x86_64-pc-linux-gnu LDFLAGS="-L${CHIPS_PREFIX}/lib/" CPPFLAGS="-I${CHIPS_PREFIX}/include/" --with-gui=yes --disable-tests --disable-bench --enable-upnp-default --enable-experimental-asm --enable-static --disable-shared
             make -j$(nproc)
 
-            ls -lad src/{chips-cli,chipsd}
+            ls -lad src/{chips-cli,chipsd} src/qt/chips-qt
